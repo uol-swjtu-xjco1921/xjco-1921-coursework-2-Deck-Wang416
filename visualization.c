@@ -4,6 +4,7 @@
 #define WINDOW_HEIGHT 600
 #define WINDOW_TITLE "Map Visualization"
 
+// Find a node with a specific ID and return the index of that node in the array
 int find_node_index(Node *nodes, int node_count, int id) 
 {
     for (int i = 0; i < node_count; i++) 
@@ -24,7 +25,7 @@ int flip_y(int y)
 }
 
 // Draw the map using the nodes and links provided
-void draw_map(Node *nodes, int node_count, Link *links, int link_count) 
+void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path)
 {
     // Initialize SDL.
     if (SDL_Init(SDL_INIT_VIDEO) < 0) 
@@ -102,7 +103,7 @@ void draw_map(Node *nodes, int node_count, Link *links, int link_count)
 
         double min_lon = nodes[0].lon, max_lon = nodes[0].lon;
 
-        for (int i = 0; i < node_count; i++) 
+        for (int i = 0; i < num_nodes; i++) 
         {
             if (nodes[i].lat < min_lat) min_lat = nodes[i].lat;
 
@@ -139,11 +140,11 @@ void draw_map(Node *nodes, int node_count, Link *links, int link_count)
         double offset_lon = 50 - min_lon * scale_lon + 50;
 
         // Draw nodes
-        for (int i = 0; i < node_count; i++)
+        for (int i = 0; i < num_nodes; i++)
         {
             bool isConnected = false;
 
-            for (int j = 0; j < link_count; j++)
+            for (int j = 0; j < num_links; j++)
             {
                 if (links[j].node1 == nodes[i].id || links[j].node2 == nodes[i].id)
                 {
@@ -172,12 +173,12 @@ void draw_map(Node *nodes, int node_count, Link *links, int link_count)
             }
         }
 
-        // Draw connection lines
-        for (int i = 0; i < link_count; i++)
+        // Draw the shortest route
+        for (int i = 0; i < num_links; i++)
         {
-            int node1_index = find_node_index(nodes, node_count, links[i].node1);
+            int node1_index = find_node_index(nodes, num_nodes, links[i].node1);
 
-            int node2_index = find_node_index(nodes, node_count, links[i].node2);
+            int node2_index = find_node_index(nodes, num_nodes, links[i].node2);
 
             if (node1_index != -1 && node2_index != -1)
             {
@@ -239,6 +240,29 @@ void draw_map(Node *nodes, int node_count, Link *links, int link_count)
             int pos = (int)(round((min_lon + i * x_tick_interval) * 1000.0) / 1000.0 * scale_lon + offset_lon);
 
             SDL_RenderDrawLine(renderer, pos, flip_y((int)((max_lat * scale_lat) + offset_lat)), pos, flip_y((int)((max_lat * scale_lat) + offset_lat - 5)));
+        }
+
+        // Draw path
+        if (path != NULL && path->length > 1) 
+        {
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE); // Set red
+
+            for (int i = 1; i < path->length; i++) 
+            {
+                int node1_index = find_node_index(nodes, num_nodes, path->path[i - 1].id);
+
+                int node2_index = find_node_index(nodes, num_nodes, path->path[i].id);
+
+                int x1 = (int)(nodes[node1_index].lon * scale_lon + offset_lon);
+
+                int y1 = flip_y((int)(nodes[node1_index].lat * scale_lat + offset_lat));
+
+                int x2 = (int)(nodes[node2_index].lon * scale_lon + offset_lon);
+
+                int y2 = flip_y((int)(nodes[node2_index].lat * scale_lat + offset_lat));
+
+                SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+            }
         }
 
         // Draw legend

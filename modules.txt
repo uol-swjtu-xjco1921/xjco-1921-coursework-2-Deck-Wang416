@@ -12,7 +12,7 @@ This module visualizes and interacts with map data, providing an intuitive repre
 
 Module 4: Path Calculation and Backtracking (TBD)
 
-This module calculates the shortest and fastest paths using Dijkstra's algorithm and iteratively backtracks through them. "pathCalculation.c" will include a Dijkstra implementation, which takes graph representation, start and end nodes, and a mode flag for shortest or fastest paths. It uses a priority queue for unvisited nodes and updates distances/times and parent pointers. Another function backtracks from the end node using parent pointers, returning the path as a list of nodes to be traversed.
+This module calculates the shortest and fastest paths using Dijkstra algorithm and iteratively backtracks through them. "pathCalculation.c" will include a Dijkstra implementation, which takes graph representation, start and end nodes, and a mode flag for shortest or fastest paths. It uses a priority queue for unvisited nodes and updates distances/times and parent pointers. Another function backtracks from the end node using parent pointers, returning the path as a list of nodes to be traversed.
 
 Module 5: Main Function and Integration (TBD)
 
