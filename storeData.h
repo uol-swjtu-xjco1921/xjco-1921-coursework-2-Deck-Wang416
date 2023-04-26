@@ -11,14 +11,14 @@ typedef struct Node
 {
     int id;
 
-    double lat;
+    double lat; //纬度
     
-    double lon;
+    double lon; //经度
 } Node;
 
 typedef struct Link
 {
-    int id;
+    int id; // 连接的唯一标识符
 
     int node1;
 
@@ -52,7 +52,7 @@ typedef enum
     LINK_LIST,
 
     NODE_LIST,
-} ListType;
+} ListType; //枚举类型，表示链表的类型
 
 typedef struct DataLists
 {
@@ -63,7 +63,14 @@ typedef struct DataLists
     int node_count;
 
     int link_count;
-} DataLists;
+} DataLists; //包含了节点链表和连接链表以及它们的计数
+
+typedef struct 
+{
+    int length; //路径中的节点数量
+
+    Node *path;
+} Path;//从起点到终点的路径
 
 void free_list(void *list, ListType type);
 

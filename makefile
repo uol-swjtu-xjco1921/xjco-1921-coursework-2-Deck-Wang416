@@ -16,7 +16,7 @@ LDFLAGS = -lxml2 \
           -lSDL2 \
           -lSDL2_ttf
 TARGET = main
-SRCS = readMap.c storeData.c main.c visualization.c
+SRCS = readMap.c storeData.c main.c visualization.c findRoute.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)
