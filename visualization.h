@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 #include "readMap.h"
-#include "/opt/homebrew/include/proj.h" // #include <proj.h>
 #include "/opt/homebrew/include/SDL2/SDL.h" //#include <SDL2/SDL.h>
 #include "/opt/homebrew/Cellar/sdl2_ttf/2.20.2/include/SDL2/SDL_ttf.h"
 

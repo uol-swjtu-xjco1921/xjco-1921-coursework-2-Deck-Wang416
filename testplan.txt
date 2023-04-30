@@ -1,0 +1,17 @@
+We will employ functional and non-functional testing to test the project.
+
+Functional testing is divided into unit testing and integration testing.
+
+Unit Testing:
+Focused on individual functions, ensuring they perform as expected. We will create test cases for each function, covering both normal and edge cases, such as negative distances, zero distances, non-existent nodes, and unreachable destinations. Additionally, we will test exception handling and the correctness of error messages.
+
+Integration Testing:
+Validates the cohesive operation of the entire application. We will pass in different map data to test whether the program can identify an optimal path between the given start point and end point. Simultaneously, we will also examine memory management and resource allocation. Lastly, we will ensure the accuracy and integrity of the visualized images.
+
+Non-functional testing includes performance testing and reliability testing:
+
+Performance Testing:
+Evaluating the system's behavior under various load and stress conditions. We will test the system's response time, resource consumption, and throughput under high load environments to ensure it meets performance requirements.
+
+Reliability Testing:
+Assessing the system's behavior in abnormal and edge cases to ensure good fault tolerance and stability. We will simulate various potential failures and interruptions, testing the system's recovery capabilities in these situations.

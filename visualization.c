@@ -27,7 +27,7 @@ int flip_y(int y)
 // Draw the map using the nodes and links provided
 void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path)
 {
-    // Initialize SDL.
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
         printf("ERROR: Initialize SDL Failed(%s)\n", SDL_GetError());
@@ -173,7 +173,7 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
             }
         }
 
-        // Draw the shortest route
+        // Draw connection lines
         for (int i = 0; i < num_links; i++)
         {
             int node1_index = find_node_index(nodes, num_nodes, links[i].node1);
@@ -242,7 +242,7 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
             SDL_RenderDrawLine(renderer, pos, flip_y((int)((max_lat * scale_lat) + offset_lat)), pos, flip_y((int)((max_lat * scale_lat) + offset_lat - 5)));
         }
 
-        // Draw path
+        // Draw the shortest route
         if (path != NULL && path->length > 1) 
         {
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE); // Set red

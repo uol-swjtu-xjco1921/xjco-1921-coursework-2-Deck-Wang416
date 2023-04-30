@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "/opt/homebrew/include/proj.h" // #include <proj.h>
-
 typedef struct Node
 {
     int id;
