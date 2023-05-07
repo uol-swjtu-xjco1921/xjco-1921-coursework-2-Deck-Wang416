@@ -5,24 +5,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "/opt/homebrew/include/proj.h" // #include <proj.h>
+// Exit codes 
+#define EXIT_WITHOUT_ERRORS 0
+#define EXIT_WITH_ERRORS -1
 
-typedef struct Node
+typedef struct Node 
 {
     int id;
 
-    double lat; //纬度
+    double lat;
     
-    double lon; //经度
+    double lon;
 } Node;
 
 typedef struct Link
 {
-    int id; // 连接的唯一标识符
+    int id;
 
     int node1;
 
     int node2;
+
+    int way;
 
     double length;
 
@@ -31,6 +35,8 @@ typedef struct Link
     double arch;
 
     double land;
+
+    double speed; 
 } Link;
 
 typedef struct LinkList
@@ -52,7 +58,7 @@ typedef enum
     LINK_LIST,
 
     NODE_LIST,
-} ListType; //枚举类型，表示链表的类型
+} ListType;
 
 typedef struct DataLists
 {
@@ -63,14 +69,14 @@ typedef struct DataLists
     int node_count;
 
     int link_count;
-} DataLists; //包含了节点链表和连接链表以及它们的计数
+} DataLists;
 
 typedef struct 
 {
-    int length; //路径中的节点数量
+    int length;
 
     Node *path;
-} Path;//从起点到终点的路径
+} Path;
 
 void free_list(void *list, ListType type);
 

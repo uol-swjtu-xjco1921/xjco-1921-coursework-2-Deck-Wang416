@@ -15,7 +15,7 @@ int parse_file(const char *filename)
     {
         printf("ERROR: Bad File Name (%s)\n", filename);
 
-        return EXIT_FAILURE;
+        return EXIT_WITH_ERRORS;
     }
 
     char line[MAX_LINE_LENGTH];
@@ -25,7 +25,7 @@ int parse_file(const char *filename)
     {
         if (strncmp(line, "<node", 5) == 0) 
         {
-            Node node;
+            Node node = {0};
 
             // Extract node data from the line
             sscanf(line, "<node id=%d lat=%lf lon=%lf", &node.id, &node.lat, &node.lon);
@@ -38,12 +38,13 @@ int parse_file(const char *filename)
 
             node_count++;
         } 
+        
         else if (strncmp(line, "<link", 5) == 0) 
         {
-            Link link;
+            Link link = {0};
 
             // Extract link data from the line
-            sscanf(line, "<link id=%d node=%d node=%d length=%lf veg=%lf arch=%lf land=%lf", &link.id, &link.node1, &link.node2, &link.length, &link.veg, &link.arch, &link.land);
+            sscanf(line, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf", &link.id, &link.node1, &link.node2, &link.way, &link.length, &link.veg, &link.arch, &link.land, &link.speed);
 
             // Resize the links array to accommodate the new link
             links = realloc(links, sizeof(Link) * (link_count + 1));
@@ -58,14 +59,6 @@ int parse_file(const char *filename)
     fclose(file);
 
     FILE *output_file = fopen("data.txt", "w");
-    
-    // Check if the file can be opened successfully
-    if (output_file == NULL) 
-    {
-        printf("ERROR: Bad File Name (%s)\n", "data.txt");
-
-        return EXIT_FAILURE;
-    }
 
     // Write nodes data
     for (int i = 0; i < node_count; i++)
@@ -76,7 +69,7 @@ int parse_file(const char *filename)
     // Write links data
     for (int i = 0; i < link_count; i++)
     {
-        fprintf(output_file, "<link id=%d node=%d node=%d length=%lf veg=%lf arch=%lf land=%lf /link>\n", links[i].id, links[i].node1, links[i].node2, links[i].length, links[i].veg, links[i].arch, links[i].land);
+        fprintf(output_file, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf /link>\n", links[i].id, links[i].node1, links[i].node2, links[i].way, links[i].length, links[i].veg, links[i].arch, links[i].land, links[i].speed);
     }
 
     fclose(output_file);
@@ -88,5 +81,5 @@ int parse_file(const char *filename)
 
     printf("PARSED\n");
 
-    return EXIT_SUCCESS;
+    return EXIT_WITHOUT_ERRORS;
 }
