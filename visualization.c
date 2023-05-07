@@ -15,7 +15,7 @@ int find_node_index(Node *nodes, int node_count, int id)
         }
     }
 
-    return EXIT_FAILURE;
+    return EXIT_WITH_ERRORS;
 }
 
 // Flip the y-coordinate

@@ -87,7 +87,7 @@ DataLists store_data(const char *filename)
             LinkList *newLink = (LinkList *)malloc(sizeof(LinkList));
 
             // Extract link data from the line
-            sscanf(line, "<link id=%d node=%d node=%d length=%lf veg=%lf arch=%lf land=%lf", &newLink->data.id, &newLink->data.node1, &newLink->data.node2, &newLink->data.length, &newLink->data.veg, &newLink->data.arch, &newLink->data.land);
+            sscanf(line, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf", &newLink->data.id, &newLink->data.node1, &newLink->data.node2, &newLink->data.way, &newLink->data.length, &newLink->data.veg, &newLink->data.arch, &newLink->data.land, &newLink->data.speed);
 
             // Add the new link to the linkList
             newLink->next = data_lists.linkList;
