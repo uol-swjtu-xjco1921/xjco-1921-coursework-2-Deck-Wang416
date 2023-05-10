@@ -52,7 +52,7 @@ void free_list(void *list, ListType type)
 // Read and store the data in linkList and nodeList
 DataLists store_data(const char *filename)
 {
-    DataLists data_lists = {NULL, NULL, 0, 0};
+    DataLists data_lists = {NULL, NULL, {0, 0, 0, 0}, 0, 0};
     
     FILE* file = fopen(filename, "r");
 
@@ -69,19 +69,12 @@ DataLists store_data(const char *filename)
     // Read the file line by line
     while (fgets(line, sizeof(line), file)) 
     {
-        if (strncmp(line, "<node", 5) == 0)
+        if (strncmp(line, "<bounding", 9) == 0)
         {
-            NodeList *newNode = (NodeList *)malloc(sizeof(NodeList));
-
-            // Extract node data from the line
-            sscanf(line, "<node id=%d lat=%lf lon=%lf", &newNode->data.id, &newNode->data.lat, &newNode->data.lon);
-
-            // Add the new node to the nodeList
-            newNode->next = data_lists.nodeList;
-
-            data_lists.nodeList = newNode;
+            // Extract bounding data from the line
+            sscanf(line, "<bounding minLat=%lf minLon=%lf maxLat=%lf maxLon=%lf", &data_lists.bounding.minLat, &data_lists.bounding.minLon, &data_lists.bounding.maxLat, &data_lists.bounding.maxLon);
         }
-     
+
         if (strncmp(line, "<link", 5) == 0) 
         {
             LinkList *newLink = (LinkList *)malloc(sizeof(LinkList));
@@ -94,6 +87,19 @@ DataLists store_data(const char *filename)
 
             data_lists.linkList = newLink;
         } 
+
+        if (strncmp(line, "<node", 5) == 0)
+        {
+            NodeList *newNode = (NodeList *)malloc(sizeof(NodeList));
+
+            // Extract node data from the line
+            sscanf(line, "<node id=%d lat=%lf lon=%lf", &newNode->data.id, &newNode->data.lat, &newNode->data.lon);
+
+            // Add the new node to the nodeList
+            newNode->next = data_lists.nodeList;
+
+            data_lists.nodeList = newNode;
+        }
     }
 
     fclose(file);
