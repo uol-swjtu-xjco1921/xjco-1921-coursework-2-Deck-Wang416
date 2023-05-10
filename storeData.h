@@ -9,6 +9,17 @@
 #define EXIT_WITHOUT_ERRORS 0
 #define EXIT_WITH_ERRORS -1
 
+typedef struct Bounding
+{
+    double minLat;
+
+    double minLon;
+
+    double maxLat;
+
+    double maxLon;
+} Bounding;
+
 typedef struct Node 
 {
     int id;
@@ -65,6 +76,8 @@ typedef struct DataLists
     NodeList *nodeList;
 
     LinkList *linkList;
+
+    Bounding bounding;
 
     int node_count;
 

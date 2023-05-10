@@ -6,3 +6,4 @@
 6. Completed "testplan.txt" before the end of week 10.
 7. The quickest path was calculated using Dijkstra algorithm and visualized in the map.
 8. Preliminary implementation of interaction with users.
+9. Implemented the function of editing map attributes.

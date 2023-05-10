@@ -7,9 +7,12 @@ int parse_file(const char *filename)
 
     Link *links = NULL;
     int link_count = 0;
+
+    // Add bounding variable to store bounding information
+    Bounding bounding = {0};
     
     FILE *file = fopen(filename, "r");
-
+    
     // Check if the file can be opened successfully
     if (file == NULL) 
     {
@@ -23,7 +26,12 @@ int parse_file(const char *filename)
     // Read the file line by line
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) 
     {
-        if (strncmp(line, "<node", 5) == 0) 
+        if (strncmp(line, "<bounding", 9) == 0) 
+        {
+            sscanf(line, "<bounding minLat=%lf minLon=%lf maxLat=%lf maxLon=%lf /bounding>", &bounding.minLat, &bounding.minLon, &bounding.maxLat, &bounding.maxLon);
+        }
+
+        else if (strncmp(line, "<node", 5) == 0) 
         {
             Node node = {0};
 
@@ -59,6 +67,9 @@ int parse_file(const char *filename)
     fclose(file);
 
     FILE *output_file = fopen("data.txt", "w");
+
+    // Write bounding data on the first line
+    fprintf(output_file, "<bounding minLat=%lf minLon=%lf maxLat=%lf maxLon=%lf /bounding>\n", bounding.minLat, bounding.minLon, bounding.maxLat, bounding.maxLon);
 
     // Write nodes data
     for (int i = 0; i < node_count; i++)

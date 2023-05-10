@@ -1,188 +1,6 @@
 #include "findRoute.h"
-
-int input_node_id(const char *prompt, Node *nodes, int num_nodes)
-{
-    char input_buffer[100];
-
-    int node_id, input_result;
-
-    bool has_decimal_point, valid_node_id;
-
-    do
-    {
-        printf("%s", prompt);
-
-        fgets(input_buffer, sizeof(input_buffer), stdin);
-
-        // Check if the input contains a decimal point
-        has_decimal_point = strchr(input_buffer, '.') != NULL;
-
-        input_result = sscanf(input_buffer, "%d", &node_id);
-
-        // Check if the input is an integer
-        if (input_result != 1 || has_decimal_point)
-        {
-            printf("Usage: Enter An Integer.\n");
-
-            valid_node_id = false;
-        }
-
-        else
-        {
-            // Check for extra characters
-            char *endptr;
-
-            strtol(input_buffer, &endptr, 10);
-
-            if (*endptr != '\n' && *endptr != '\0')
-            {
-                printf("Usage: Enter An Integer With No Extra Characters.\n");
-
-                valid_node_id = false;
-            }
-
-            else
-            {
-                int node_index = find_node_index(nodes, num_nodes, node_id);
-
-                valid_node_id = node_index != -1;
-
-                // Check if the node ID is valid
-                if (!valid_node_id)
-                {
-                    printf("Usage: Enter An Existing Node ID.\n");
-                }
-            }
-        }
-
-    // Repeat until a valid node ID is entered
-    } while (input_result != 1 || has_decimal_point || !valid_node_id);
-
-    return node_id;
-}
-
-int input_link_id(const char *prompt, Link *links, int num_links)
-{
-    char input_buffer[100];
-
-    int link_id, input_result;
-
-    bool has_decimal_point, valid_link_id;
-
-    do
-    {
-        printf("%s", prompt);
-
-        fgets(input_buffer, sizeof(input_buffer), stdin);
-
-        // Check if the input contains a decimal point
-        has_decimal_point = strchr(input_buffer, '.') != NULL;
-
-        input_result = sscanf(input_buffer, "%d", &link_id);
-
-        // Check if the input is an integer
-        if (input_result != 1 || has_decimal_point)
-        {
-            printf("Usage: Enter An Integer.\n");
-
-            valid_link_id = false;
-        }
-
-        else
-        {
-            // Check for extra characters
-            char *endptr;
-
-            strtol(input_buffer, &endptr, 10);
-
-            if (*endptr != '\n' && *endptr != '\0')
-            {
-                printf("Usage: Enter An Integer With No Extra Characters.\n");
-
-                valid_link_id = false;
-            }
-
-            else
-            {
-                int link_index = -1;
-
-                for (int i = 0; i < num_links; i++)
-                {
-                    if (links[i].id == link_id)
-                    {
-                        link_index = i;
-
-                        break;
-                    }
-                }
-
-                valid_link_id = link_index != -1;
-
-                // Check if the link ID is valid
-                if (!valid_link_id)
-                {
-                    printf("Usage: Enter An Existing Link ID.\n");
-                }
-            }
-        }
-
-    // Repeat until a valid link ID is entered
-    } while (input_result != 1 || has_decimal_point || !valid_link_id);
-
-    return link_id;
-}
-
-double input_speed(const char *prompt)
-{
-    char input_buffer[100];
-
-    double speed;
-
-    int input_result;
-
-    bool valid_speed;
-
-    do
-    {
-        printf("%s", prompt);
-
-        fgets(input_buffer, sizeof(input_buffer), stdin);
-
-        input_result = sscanf(input_buffer, "%lf", &speed);
-
-        // Check if the input is a positive number
-        if (input_result != 1 || speed < 0)
-        {
-            printf("Usage: Enter A Positive Number.\n");
-
-            valid_speed = false;
-        }
-
-        else
-        {
-            // Check for extra characters
-            char *endptr;
-
-            strtod(input_buffer, &endptr);
-
-            if (*endptr != '\n' && *endptr != '\0')
-            {
-                printf("Usage: Enter A Positive Number With No Extra Characters.\n");
-
-                valid_speed = false;
-            }
-
-            else
-            {
-                valid_speed = true;
-            }
-        }
-
-    // Repeat until a valid speed is entered
-    } while (!valid_speed);
-
-    return speed;
-}
+#include "checkInput.h"
+#include "editAttribute.h"
 
 int main(int argc, char **argv) 
 {
@@ -231,15 +49,15 @@ int main(int argc, char **argv)
 
     do
     {
-        printf("Choose An Option from Shortest Path(A), Fastest Path(B) or Constraint Route(C): ");
+        printf("Choose An Option from Shortest Path(A), Fastest Path(B), Constraint Route(C) and Edit Attributes(D): ");
 
         char user_choice;
 
         scanf("%c", &user_choice);
 
-        getchar();
-
         user_choice = tolower(user_choice);
+
+        getchar();
 
         // Handle user choices
         switch (user_choice) 
@@ -372,7 +190,7 @@ int main(int argc, char **argv)
                     break;
                 }
             
-            // Constraint route (coming soon)
+            // Constraint route (Coming soon!)
             case 'c':
 
                 printf("Coming Soon!\n");
@@ -381,12 +199,138 @@ int main(int argc, char **argv)
 
                 break;
 
+            // Attributes edition
+            case 'd':
+                {
+                    // Loop until a valid choice for editing attributes is provided
+                    bool correct_choice = false;
+
+                    do
+                    {
+                        printf("Choose A Type of Element to Modify from Link(1) and Node(2): ");
+
+                        char user_selection;
+
+                        scanf("%c", &user_selection);
+
+                        getchar();
+
+                        // Handle user choices for editing attributes
+                        switch (user_selection) 
+                        {
+                            // Edit link attributes
+                            case '1':
+                            {
+                                int link_id = input_link_id("Enter The Link ID: ", links, data_lists.link_count);
+
+                                printf("Link Attributes: length, veg, arch, land, speed.\n");
+
+                                printf("Enter The Attribute to Modify: ");
+
+                                char attribute[10];
+
+                                fgets(attribute, sizeof(attribute), stdin);
+
+                                strtok(attribute, "\n");
+
+                                // Check if the attribute is valid
+                                while (strcmp(attribute, "length") != 0 && strcmp(attribute, "veg") != 0 &&
+                                    strcmp(attribute, "arch") != 0 && strcmp(attribute, "land") != 0 &&
+                                    strcmp(attribute, "speed") != 0)
+                                {
+                                    printf("Usage: Enter An Existing Attribute.\n");
+
+                                    printf("Enter The Attribute: ");
+
+                                    fgets(attribute, sizeof(attribute), stdin);
+
+                                    strtok(attribute, "\n");
+                                }
+
+                                // Input new attribute value
+                                double new_value = input_speed("Enter The New Value: ");
+
+                                // Update link attribute in the data file
+                                update_link_attribute(argv[1], nodes, data_lists, links, data_lists.link_count, link_id, attribute, new_value);
+
+                                correct_choice = true;
+
+                                break; 
+                            }
+
+                            // Edit node attributes
+                            case '2':
+                                {
+                                    int node_id = input_node_id("Enter The Node ID: ", nodes, data_lists.node_count);
+
+                                    printf("Node Attributes: lat, lon\n");
+
+                                    printf("Enter The Attribute to Modify: ");
+
+                                    char attribute[10];
+
+                                    fgets(attribute, sizeof(attribute), stdin);
+
+                                    strtok(attribute, "\n");
+
+                                    // Check if the attribute is valid
+                                    while (strcmp(attribute, "lat") != 0 && strcmp(attribute, "lon") != 0)
+                                    {
+                                        printf("Usage: Enter An Existing Attribute.\n");
+
+                                        printf("Enter The Attribute: ");
+
+                                        fgets(attribute, sizeof(attribute), stdin);
+                                        
+                                        strtok(attribute, "\n");
+                                    }
+
+                                    double new_value;
+
+                                    // Input new attribute value
+                                    if (strcmp(attribute, "lat") == 0)
+                                    {
+                                        new_value = input_coordinate("Enter The New Value: ", data_lists.bounding.minLat, data_lists.bounding.maxLat);
+                                    }
+
+                                    else
+                                    {
+                                        new_value = input_coordinate("Enter The New Value: ", data_lists.bounding.minLon, data_lists.bounding.maxLon);
+                                    }
+
+                                    // Update node attribute in the data file
+                                    update_node_attribute(argv[1], nodes, data_lists, links, data_lists.node_count, node_id, attribute, new_value);
+
+                                    correct_choice = true;
+
+                                    break;            
+                                }
+
+                            default:
+                        
+                                {
+                                    printf("Usage: Enter Either 1 or 2.\n");
+
+                                    break;                           
+                                }
+                        }
+
+                    } while (!correct_choice);
+
+                    printf("EDITED\n");
+
+                    valid_choice = true;
+
+                    break;
+                }
+
             default:
 
                 printf("Usage: Enter Either A, B or C.\n");
 
                 break;
         }
+
     } while (!valid_choice);
     
     // Free allocated memory
