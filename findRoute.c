@@ -14,14 +14,13 @@ void free_path(Path *path)
 }
 
 // Calculate the Linear Distance between two nodes 
-double calculate_length(Node node1, Node node2, Link link)
+double calculate_length(Link link)
 {
-    // Pythagorean Theorem
-    return hypot(node2.lon - node1.lon, node2.lat - node1.lat);
+    return link.length;
 }
 
 // Calculate the time to pass through a road
-double calculate_time(Node node1, Node node2, Link link)
+double calculate_time(Link link)
 {
     double time = link.length / link.speed;
 
@@ -51,7 +50,7 @@ int find_min_weight(double *weights, bool *visited, int num_nodes)
     return min_index;
 }
 
-Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, int start_index, int end_index, double (*weight_function)(Node, Node, Link)) 
+Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, int start_index, int end_index, double (*weight_function)(Link))
 {
     double *weights = (double *)malloc(num_nodes * sizeof(double));
 
@@ -59,7 +58,7 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
 
     bool *visited = (bool *)malloc(num_nodes * sizeof(bool));
 
-    Path result = {0, NULL};
+    Path result = {0, NULL, 0};
 
     // Allocate an initial size of memory
     result.path = (Node *)calloc(1, sizeof(Node));
@@ -78,12 +77,12 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
         int current_node_index = find_min_weight(weights, visited, num_nodes);
 
         if (current_node_index == -1) 
-        {
+        {      
             break;
         }
 
         visited[current_node_index] = true;
-
+        
         // Check the neighboring nodes of the current node
         for (int j = 0; j < num_links; j++) 
         {
@@ -92,7 +91,7 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
             if (links[j].node1 == nodes[current_node_index].id) 
             {
                 neighbor_index = find_node_index(nodes, num_nodes, links[j].node2);
-            }
+            } 
             
             else if (links[j].node2 == nodes[current_node_index].id) 
             {
@@ -103,7 +102,7 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
             if (neighbor_index != -1 && !visited[neighbor_index]) 
             {
                 // Calculate new weight from current node to neighboring nodes
-                double new_weight = weights[current_node_index] + weight_function(nodes[current_node_index], nodes[neighbor_index], links[j]);
+                double new_weight = weights[current_node_index] + weight_function(links[j]);
 
                 // If new weight is less than the previous one, update weight and set current node as previous node
                 if (new_weight < weights[neighbor_index]) 
@@ -118,9 +117,9 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
 
     if (weights[end_index] == DBL_MAX) 
     {
-        printf("No Path Found between Nodes %d And %d.\n", start_index, end_index);
+        printf("No Appropriate Path Found.\n");
 
-        result.length = -1;
+        result.length = EXIT_WITH_ERRORS;
 
         return result;
     }
@@ -169,4 +168,75 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
     printf("FOUND\n");
 
     return result;
+}
+
+double path_length(Path path, Link *links, int num_links) 
+{
+    double total_length = 0;
+
+    for (int i = 0; i < path.length - 1; i++) 
+    {
+        int current_node_id = path.path[i].id;
+
+        int next_node_id = path.path[i + 1].id;
+        
+        for (int j = 0; j < num_links; j++) 
+        {
+            if ((links[j].node1 == current_node_id && links[j].node2 == next_node_id) ||
+                (links[j].node2 == current_node_id && links[j].node1 == next_node_id)) 
+                {
+                    total_length += links[j].length;
+
+                    break;
+                }
+        }
+    }
+
+    return total_length;
+}
+
+Path constrained_shortest_path(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_nodes, int num_intermediate_nodes) 
+{
+    Path constrained_path = {0, NULL, 0};
+
+    int previous_node_id = start_id;
+
+    double total_length = 0;
+
+    for (int i = 0; i <= num_intermediate_nodes; i++)
+    {
+        int next_node_id = (i == num_intermediate_nodes) ? end_id : intermediate_nodes[i];
+
+        int start_index = find_node_index(nodes, num_nodes, previous_node_id);
+
+        int end_index = find_node_index(nodes, num_nodes, next_node_id);
+
+        Path sub_path = dijkstra_algorithm(nodes, num_nodes, links, num_links, start_index, end_index, calculate_length);
+
+        if (sub_path.length == EXIT_WITH_ERRORS) 
+        {
+            printf("No Constrained Path Found.\n");
+
+            free_path(&constrained_path);
+
+            return constrained_path;
+        }
+
+        // Concatenate the sub_path to the constrained_path
+        constrained_path.path = realloc(constrained_path.path, (constrained_path.length + sub_path.length - 1) * sizeof(Node));
+
+        memcpy(constrained_path.path + constrained_path.length, sub_path.path + 1, (sub_path.length - 1) * sizeof(Node));
+
+        constrained_path.length += sub_path.length - 1;
+
+        total_length += path_length(sub_path, links, num_links);
+
+        previous_node_id = next_node_id;
+
+        free_path(&sub_path);
+    }
+
+    constrained_path.total_length = total_length;
+
+    return constrained_path;
 }

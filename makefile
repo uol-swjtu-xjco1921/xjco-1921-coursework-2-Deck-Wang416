@@ -16,7 +16,7 @@ LDFLAGS = -lxml2 \
           -lSDL2 \
           -lSDL2_ttf
 TARGET = main
-SRCS = readMap.c storeData.c main.c visualization.c findRoute.c checkInput.c editAttribute.c
+SRCS = readMap.c main.c visualization.c findRoute.c checkInput.c editAttribute.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)
@@ -28,4 +28,4 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET) $(OBJS) data.txt
+	rm -f $(TARGET) $(OBJS)
