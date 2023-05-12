@@ -2,6 +2,8 @@
 #include "checkInput.h"
 #include "editAttribute.h"
 
+#define MAX_NODES 100
+
 int main(int argc, char **argv) 
 {
     if (argc != 2) 
@@ -11,15 +13,8 @@ int main(int argc, char **argv)
         return EXIT_WITH_ERRORS;
     }
 
-    // Check if file parsing was successful
-    int fileParsing = parse_file(argv[1]);
-
-    if (fileParsing == EXIT_WITH_ERRORS)
-
-        return EXIT_WITH_ERRORS;
-
-    // Store the data from the parsed file
-    DataLists data_lists = store_data("data.txt");
+    // Read and store the data from the original file
+    DataLists data_lists = parse_and_store_data(argv[1]);
 
     // Create an array of nodes and links
     Node *nodes = (Node *)malloc(data_lists.node_count * sizeof(Node));
@@ -68,7 +63,19 @@ int main(int argc, char **argv)
                     // Prompt user to enter the start and end node ID
                     int start_id = input_node_id("Enter The Start Node ID: ", nodes, data_lists.node_count);
 
-                    int end_id = input_node_id("Enter The End Node ID: ", nodes, data_lists.node_count);
+                    int end_id;
+
+                    do 
+                    {
+                        end_id = input_node_id("Enter The End Node ID: ", nodes, data_lists.node_count);
+
+                        // Check if the end node ID and start node ID are the same
+                        if (start_id == end_id)
+                        {
+                            printf("Enter An End Node ID Different from The Start Node ID.\n");
+                        }
+
+                    } while (start_id == end_id);
 
                     // Find the index of the start and end node in the arrays
                     int start_index = find_node_index(nodes, data_lists.node_count, start_id);
@@ -109,7 +116,19 @@ int main(int argc, char **argv)
                     // Prompt user to enter the start and end node ID
                     int start_id = input_node_id("Enter The Start Node ID: ", nodes, data_lists.node_count);
 
-                    int end_id = input_node_id("Enter The End Node ID: ", nodes, data_lists.node_count);
+                    int end_id;
+
+                    do 
+                    {
+                        end_id = input_node_id("Enter The End Node ID: ", nodes, data_lists.node_count);
+
+                        // Check if the end node ID and start node ID are the same
+                        if (start_id == end_id)
+                        {
+                            printf("Enter An End Node ID Different from The Start Node ID.\n");
+                        }
+                        
+                    } while (start_id == end_id);
 
                     // Find the index of the start and end node in the arrays
                     int start_index = find_node_index(nodes, data_lists.node_count, start_id);
@@ -181,7 +200,10 @@ int main(int argc, char **argv)
                         printf("\n");
 
                         draw_map(nodes, data_lists.node_count, links, data_lists.link_count, &path);
-                    } 
+                    }
+
+                    // Save the updated data to original and parsed files
+                    save_data(argv[1], nodes, links, &data_lists);
 
                     free_path(&path);
 
@@ -189,15 +211,116 @@ int main(int argc, char **argv)
                     
                     break;
                 }
-            
-            // Constraint route (Coming soon!)
+
+            // Constraint route
             case 'c':
+                {
+                    // Prompt user to enter the start and end node ID
+                    int start_id = input_node_id("Enter The Start Node ID: ", nodes, data_lists.node_count);
 
-                printf("Coming Soon!\n");
+                    int end_id;
 
-                valid_choice = true;
+                    do 
+                    {
+                        end_id = input_node_id("Enter The End Node ID: ", nodes, data_lists.node_count);
 
-                break;
+                        // Check if the end node ID and start node ID are the same
+                        if (start_id == end_id)
+                        {
+                            printf("Enter An End Node ID Different from The Start Node ID.\n");
+                        }
+                        
+                    } while (start_id == end_id);
+
+                    bool correct_choice = false;
+
+                    // Initialize an array to store the intermediate node IDs
+                    int intermediate_nodes[MAX_NODES];
+
+                    int num_intermediate_nodes = 0;
+
+                    do
+                    {
+                        // Prompt user to choose between location and POI
+                        printf("Choose An Option From Passing A Given Location(L) or POI(P): ");
+
+                        char constraint_type, input_continue; 
+
+                        scanf("%c", &constraint_type);
+
+                        getchar(); 
+
+                        constraint_type = toupper(constraint_type); // Convert the input to upper case
+
+                        switch (constraint_type) 
+                        {
+                            case 'L':
+
+                                // Prompt user to enter intermediate node IDs
+                                input_continue = 'y';
+
+                                while (tolower(input_continue) == 'y') 
+                                {
+                                    intermediate_nodes[num_intermediate_nodes] = input_node_id("Enter An Intermediate Node ID: ", nodes, data_lists.node_count);
+
+                                    num_intermediate_nodes++;
+
+                                    printf("Enter 'Y' to Continue, Enter Any Other Key to Finish: ");
+
+                                    scanf("%c", &input_continue);
+
+                                    getchar(); 
+                                }
+
+                                correct_choice = true;
+
+                                break;
+
+                            case 'P':
+
+                                // Handle POI constraint type here (to be implemented)
+
+                                correct_choice = true;
+
+                                break;
+
+                            default:
+
+                                printf("Usage: Enter Either L or P.\n");
+
+                                break;
+                        }
+
+                    } while(!correct_choice);
+
+                    // Calculate the shortest route pass a given location
+                    Path constrained_path = constrained_shortest_path(nodes, data_lists.node_count, links, data_lists.link_count, start_id, end_id, intermediate_nodes, num_intermediate_nodes);
+
+                    if (constrained_path.length > 0) 
+                    {
+                        printf("The Shortest Path with Constraints between Nodes %d and %d Is:\n", start_id, end_id);
+
+                        for (int i = 0; i < constrained_path.length; i++) 
+                        {
+                            printf("%d", constrained_path.path[i].id);
+
+                            if (i < constrained_path.length - 1) 
+                            {
+                                printf(" -> ");
+                            }
+                        }
+
+                        printf("\n");
+
+                        draw_map(nodes, data_lists.node_count, links, data_lists.link_count, &constrained_path);
+                    }
+
+                    free_path(&constrained_path);
+
+                    valid_choice = true;
+
+                    break;
+                }
 
             // Attributes edition
             case 'd':
@@ -251,7 +374,7 @@ int main(int argc, char **argv)
                                 double new_value = input_speed("Enter The New Value: ");
 
                                 // Update link attribute in the data file
-                                update_link_attribute(argv[1], nodes, data_lists, links, data_lists.link_count, link_id, attribute, new_value);
+                                update_link_attribute(argv[1], nodes, links, &data_lists, link_id, attribute, new_value);
 
                                 correct_choice = true;
 
@@ -299,7 +422,7 @@ int main(int argc, char **argv)
                                     }
 
                                     // Update node attribute in the data file
-                                    update_node_attribute(argv[1], nodes, data_lists, links, data_lists.node_count, node_id, attribute, new_value);
+                                    update_node_attribute(argv[1], nodes, links, &data_lists, node_id, attribute, new_value);
 
                                     correct_choice = true;
 
@@ -337,6 +460,8 @@ int main(int argc, char **argv)
     free(nodes);
 
     free(links);
+
+    free_unparsed_tags(data_lists.unparsedTags);
     
     free_list(data_lists.nodeList, NODE_LIST);
 

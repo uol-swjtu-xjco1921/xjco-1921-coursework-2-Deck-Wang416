@@ -1,96 +1,155 @@
 #include "readMap.h"
 
-int parse_file(const char *filename) 
+// Free the memory allocated for the list
+void free_list(void *list, ListType type) 
 {
-    Node *nodes = NULL;
-    int node_count = 0;
+    switch (type) 
+    {
+        case LINK_LIST: 
+        {
+            LinkList *linkTemp;
 
-    Link *links = NULL;
-    int link_count = 0;
+            LinkList *linkList = (LinkList *)list;
 
-    // Add bounding variable to store bounding information
-    Bounding bounding = {0};
-    
+            // Iterate through the linkList and free each element
+            while (linkList) 
+            {
+                linkTemp = linkList;
+
+                linkList = linkList->next;
+
+                free(linkTemp);
+            }
+
+            break;
+        }
+        
+        case NODE_LIST: 
+        {
+            NodeList *nodeTemp;
+
+            NodeList *nodeList = (NodeList *)list;
+
+            // Iterate through the nodeList and free each element
+            while (nodeList) 
+            {
+                nodeTemp = nodeList;
+
+                nodeList = nodeList->next;
+
+                free(nodeTemp);
+            }
+
+            break;
+        }
+
+        default:
+        
+            break;
+    }
+}
+
+void free_unparsed_tags(UnparsedTag *list) 
+{
+    UnparsedTag *current = list;
+
+    while (current != NULL) 
+    {
+        UnparsedTag *next = current->next;
+
+        free(current->line);
+
+        free(current);
+
+        current = next;
+    }
+}
+
+DataLists parse_and_store_data(const char *filename)
+{
+    DataLists data_lists = {NULL, NULL, {0, 0, 0, 0}, 0, 0};
+
     FILE *file = fopen(filename, "r");
-    
-    // Check if the file can be opened successfully
-    if (file == NULL) 
+
+    // Error handling for file opening
+    if (file == NULL)
     {
         printf("ERROR: Bad File Name (%s)\n", filename);
 
-        return EXIT_WITH_ERRORS;
+        return data_lists;
     }
 
     char line[MAX_LINE_LENGTH];
 
     // Read the file line by line
-    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) 
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
     {
-        if (strncmp(line, "<bounding", 9) == 0) 
+        if (strncmp(line, "<bounding", 9) == 0)
         {
-            sscanf(line, "<bounding minLat=%lf minLon=%lf maxLat=%lf maxLon=%lf /bounding>", &bounding.minLat, &bounding.minLon, &bounding.maxLat, &bounding.maxLon);
+            sscanf(line, "<bounding minLat=%lf minLon=%lf maxLat=%lf maxLon=%lf /bounding>", &data_lists.bounding.minLat, &data_lists.bounding.minLon, &data_lists.bounding.maxLat, &data_lists.bounding.maxLon);
         }
 
-        else if (strncmp(line, "<node", 5) == 0) 
+        else if (strncmp(line, "<node", 5) == 0)
         {
-            Node node = {0};
+            NodeList *newNode = (NodeList *)malloc(sizeof(NodeList));
 
-            // Extract node data from the line
-            sscanf(line, "<node id=%d lat=%lf lon=%lf", &node.id, &node.lat, &node.lon);
+            sscanf(line, "<node id=%d lat=%lf lon=%lf", &newNode->data.id, &newNode->data.lat, &newNode->data.lon);
 
-            // Resize the nodes array to accommodate the new node
-            nodes = realloc(nodes, sizeof(Node) * (node_count + 1));
+            newNode->next = data_lists.nodeList;
 
-            // Add the new node to the nodes array
-            nodes[node_count] = node;
+            data_lists.nodeList = newNode;
 
-            node_count++;
-        } 
-        
-        else if (strncmp(line, "<link", 5) == 0) 
+            data_lists.node_count++;
+        }
+
+        else if (strncmp(line, "<link", 5) == 0)
         {
-            Link link = {0};
+            LinkList *newLink = (LinkList *)malloc(sizeof(LinkList));
 
-            // Extract link data from the line
-            sscanf(line, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf", &link.id, &link.node1, &link.node2, &link.way, &link.length, &link.veg, &link.arch, &link.land, &link.speed);
+            sscanf(line, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf", &newLink->data.id, &newLink->data.node1, &newLink->data.node2, &newLink->data.way, &newLink->data.length, &newLink->data.veg, &newLink->data.arch, &newLink->data.land, &newLink->data.speed);
 
-            // Resize the links array to accommodate the new link
-            links = realloc(links, sizeof(Link) * (link_count + 1));
+            newLink->next = data_lists.linkList;
 
-            // Add the new link to the links array
-            links[link_count] = link;
-            
-            link_count++;
+            data_lists.linkList = newLink;
+
+            data_lists.link_count++;
+        }
+
+        // Process the rest of the file
+        else if (strncmp(line, "<way", 4) == 0)
+        {
+            do
+            {
+                UnparsedTag *new_unparsed = (UnparsedTag *)malloc(sizeof(UnparsedTag));
+
+                new_unparsed->line = strdup(line);
+
+                new_unparsed->next = NULL;
+
+                if (data_lists.unparsedTags == NULL) 
+                {
+                    data_lists.unparsedTags = new_unparsed;
+                }
+
+                else 
+                {
+                    UnparsedTag *current = data_lists.unparsedTags;
+
+                    while (current->next != NULL) 
+                    {
+                        current = current->next;
+                    }
+                    
+                    current->next = new_unparsed;
+                }
+
+            } while (fgets(line, MAX_LINE_LENGTH, file) != NULL);
         }
     }
-
+                
     fclose(file);
 
-    FILE *output_file = fopen("data.txt", "w");
+    printf("READ AND STORED\n");
 
-    // Write bounding data on the first line
-    fprintf(output_file, "<bounding minLat=%lf minLon=%lf maxLat=%lf maxLon=%lf /bounding>\n", bounding.minLat, bounding.minLon, bounding.maxLat, bounding.maxLon);
-
-    // Write nodes data
-    for (int i = 0; i < node_count; i++)
-    {
-        fprintf(output_file, "<node id=%d lat=%lf lon=%lf /node>\n", nodes[i].id, nodes[i].lat, nodes[i].lon);
-    }
-
-    // Write links data
-    for (int i = 0; i < link_count; i++)
-    {
-        fprintf(output_file, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf /link>\n", links[i].id, links[i].node1, links[i].node2, links[i].way, links[i].length, links[i].veg, links[i].arch, links[i].land, links[i].speed);
-    }
-
-    fclose(output_file);
-
-    // Free allocated memory
-    free(nodes);
-
-    free(links);
-
-    printf("PARSED\n");
-
-    return EXIT_WITHOUT_ERRORS;
+    return data_lists;
 }

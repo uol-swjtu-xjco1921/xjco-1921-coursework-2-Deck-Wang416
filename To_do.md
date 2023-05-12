@@ -7,3 +7,4 @@
 7. The quickest path was calculated using Dijkstra algorithm and visualized in the map.
 8. Preliminary implementation of interaction with users.
 9. Implemented the function of editing map attributes.
+10. The shortest path passing multiple specified intermediate locations has been calculated.
