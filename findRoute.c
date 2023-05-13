@@ -195,7 +195,7 @@ double path_length(Path path, Link *links, int num_links)
     return total_length;
 }
 
-Path constrained_shortest_path(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_nodes, int num_intermediate_nodes) 
+Path shortest_path_with_positions(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_nodes, int num_intermediate_nodes) 
 {
     Path constrained_path = {0, NULL, 0};
 
@@ -239,4 +239,104 @@ Path constrained_shortest_path(Node *nodes, int num_nodes, Link *links, int num_
     constrained_path.total_length = total_length;
 
     return constrained_path;
+}
+
+bool is_poi_on_link(Link *link, int poi_id) 
+{
+    // Iterate over the POIs on the link
+    for (int i = 0; i < link->poi_count; i++) 
+    {
+        if (link->POI[i] == poi_id) 
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Link* find_link_between_nodes(Link* links, int num_links, int node1_id, int node2_id) 
+{
+    for (int i = 0; i < num_links; i++) 
+    {
+        if ((links[i].node1 == node1_id && links[i].node2 == node2_id) ||
+            (links[i].node1 == node2_id && links[i].node2 == node1_id))
+            {
+                return &links[i];
+            }
+    }
+
+    return NULL;
+}
+
+Path shortest_path_with_pois(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_poi_ids, int num_intermediate_pois) 
+{
+    Path shortest_path = {0, NULL, INFINITY};
+
+    // Check if start node ID or end node ID are in links with POI
+    for (int i = 0; i < num_intermediate_pois; i++) 
+    {
+        if (find_link_between_nodes(links, num_links, start_id, end_id) == NULL)
+            {
+                break;
+            }
+
+        if (is_poi_on_link(find_link_between_nodes(links, num_links, start_id, end_id), intermediate_poi_ids[i]) == true)
+            {
+                // If start_id or end_id is a POI, construct a direct path
+                int start_index = find_node_index(nodes, num_nodes, start_id);
+
+                int end_index = find_node_index(nodes, num_nodes, end_id);
+
+                shortest_path = dijkstra_algorithm(nodes, num_nodes, links, num_links, start_index, end_index, calculate_length);
+      
+                return shortest_path;
+            }
+    }
+
+    // For each intermediate POI
+    for (int i = 0; i < num_intermediate_pois; i++) 
+    {
+        // Find all links containing the current POI
+        Link* links_with_poi[MAX_LINKS]; 
+
+        int num_links_with_poi = 0;
+
+        for (int j = 0; j < num_links; j++) 
+        {
+            if (is_poi_on_link(&links[j], intermediate_poi_ids[i])) 
+            {
+                links_with_poi[num_links_with_poi++] = &links[j];
+            }
+        }
+
+        // For each link containing the current POI
+        for (int j = 0; j < num_links_with_poi; j++) 
+        {
+            // Compute a path passing through the current link
+            int intermediate_nodes[2] = {links_with_poi[j]->node1, links_with_poi[j]->node2};
+
+            Path current_path = shortest_path_with_positions(nodes, num_nodes, links, num_links, start_id, end_id, intermediate_nodes, 2);
+
+            // If current path is shorter than the shortest path found so far, update the shortest path
+            if (current_path.total_length < shortest_path.total_length) 
+            {
+                free_path(&shortest_path);
+
+                shortest_path = current_path;
+            } 
+
+            else 
+            {
+                free_path(&current_path);
+            }
+        }
+    }
+
+    if (shortest_path.length == 0) 
+    {
+        printf("No Constrained Path Found.\n");
+    }
+
+    return shortest_path;
 }

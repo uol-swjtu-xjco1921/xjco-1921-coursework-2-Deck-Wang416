@@ -50,6 +50,10 @@ typedef struct Link
     double land;
 
     double speed; 
+
+    int *POI;
+
+    int poi_count;
 } Link;
 
 typedef struct LinkList

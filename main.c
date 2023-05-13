@@ -239,6 +239,8 @@ int main(int argc, char **argv)
 
                     int num_intermediate_nodes = 0;
 
+                    Path constrained_path;
+
                     do
                     {
                         // Prompt user to choose between location and POI
@@ -250,39 +252,61 @@ int main(int argc, char **argv)
 
                         getchar(); 
 
-                        constraint_type = toupper(constraint_type); // Convert the input to upper case
+                        constraint_type = toupper(constraint_type);
 
                         switch (constraint_type) 
                         {
                             case 'L':
-
-                                // Prompt user to enter intermediate node IDs
-                                input_continue = 'y';
-
-                                while (tolower(input_continue) == 'y') 
                                 {
-                                    intermediate_nodes[num_intermediate_nodes] = input_node_id("Enter An Intermediate Node ID: ", nodes, data_lists.node_count);
+                                    // Prompt user to enter intermediate node IDs
+                                    input_continue = 'y';
 
-                                    num_intermediate_nodes++;
+                                    while (tolower(input_continue) == 'y') 
+                                    {
+                                        intermediate_nodes[num_intermediate_nodes] = input_node_id("Enter An Intermediate Node ID: ", nodes, data_lists.node_count);
 
-                                    printf("Enter 'Y' to Continue, Enter Any Other Key to Finish: ");
+                                        num_intermediate_nodes++;
 
-                                    scanf("%c", &input_continue);
+                                        printf("Enter 'Y' to Continue, Enter Any Other Key to Finish: ");
 
-                                    getchar(); 
+                                        scanf("%c", &input_continue);
+
+                                        getchar(); 
+                                    }
+
+                                    // Calculate the shortest route pass a given location
+                                    constrained_path = shortest_path_with_positions(nodes, data_lists.node_count, links, data_lists.link_count, start_id, end_id, intermediate_nodes, num_intermediate_nodes);
+
+                                    correct_choice = true;
+
+                                    break;
                                 }
 
-                                correct_choice = true;
-
-                                break;
-
                             case 'P':
+                                {
+                                    input_continue = 'y';
 
-                                // Handle POI constraint type here (to be implemented)
+                                    while (tolower(input_continue) == 'y')
+                                    {
+                                        // Prompt user to enter a POI ID
+                                        intermediate_nodes[num_intermediate_nodes] = input_POI("Enter An POI ID: ", links, data_lists.link_count);
 
-                                correct_choice = true;
+                                        num_intermediate_nodes++;
 
-                                break;
+                                        printf("Enter 'Y' to Continue, Enter Any Other Key to Finish: ");
+
+                                        scanf("%c", &input_continue);
+
+                                        getchar(); 
+                                    }
+                                    
+                                    // Calculate the shortest route passing through the given POIs
+                                    constrained_path = shortest_path_with_pois(nodes, data_lists.node_count, links, data_lists.link_count, start_id, end_id, intermediate_nodes, num_intermediate_nodes);
+
+                                    correct_choice = true;
+
+                                    break;
+                                }                     
 
                             default:
 
@@ -292,9 +316,6 @@ int main(int argc, char **argv)
                         }
 
                     } while(!correct_choice);
-
-                    // Calculate the shortest route pass a given location
-                    Path constrained_path = constrained_shortest_path(nodes, data_lists.node_count, links, data_lists.link_count, start_id, end_id, intermediate_nodes, num_intermediate_nodes);
 
                     if (constrained_path.length > 0) 
                     {
@@ -330,7 +351,7 @@ int main(int argc, char **argv)
 
                     do
                     {
-                        printf("Choose A Type of Element to Modify from Link(1) and Node(2): ");
+                        printf("Choose A Type of Element to Modify from Link(1), Node(2) and POI(3): ");
 
                         char user_selection;
 
@@ -427,6 +448,39 @@ int main(int argc, char **argv)
                                     correct_choice = true;
 
                                     break;            
+                                }
+                            
+                            // Edit link POI attributes
+                            case '3':
+                                {
+                                    int link_id = input_link_id("Enter The Link ID: ", links, data_lists.link_count);
+
+                                    char continue_input = 'y';
+
+                                    while (tolower(continue_input) == 'y')
+                                    {
+                                        // Input new POI id
+                                        printf("Enter The New POI ID: ");
+
+                                        int new_poi_id;
+
+                                        scanf("%d", &new_poi_id);
+
+                                        getchar();
+
+                                        // Update link POI attribute in the data file
+                                        update_poi_attribute(argv[1], nodes, links, &data_lists, link_id, new_poi_id);
+
+                                        printf("Enter 'Y' to Continue, Enter Any Other Key to Finish: ");
+
+                                        scanf("%c", &continue_input);
+
+                                        getchar(); 
+                                    }
+
+                                    correct_choice = true;
+
+                                    break; 
                                 }
 
                             default:

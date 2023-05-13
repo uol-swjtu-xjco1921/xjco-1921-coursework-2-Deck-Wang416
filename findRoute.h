@@ -5,6 +5,8 @@
 
 #include "visualization.h"
 
+#define MAX_LINKS 300
+
 void free_path(Path *path);
 
 double calculate_length(Link link);
@@ -17,6 +19,10 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
 
 double path_length(Path path, Link *links, int num_links);
 
-Path constrained_shortest_path(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_nodes, int num_intermediate_nodes);
+Path shortest_path_with_positions(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_nodes, int num_intermediate_nodes);
+
+Link* find_link_between_nodes(Link* links, int num_links, int node1_id, int node2_id);
+
+Path shortest_path_with_pois(Node *nodes, int num_nodes, Link *links, int num_links, int start_id, int end_id, int *intermediate_poi_ids, int num_intermediate_pois);
 
 #endif
