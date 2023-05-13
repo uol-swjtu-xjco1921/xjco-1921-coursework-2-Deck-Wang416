@@ -154,7 +154,7 @@ double input_speed(const char *prompt)
         input_result = sscanf(input_buffer, "%lf", &speed);
 
         // Check if the input is a positive number
-        if (input_result != 1 || speed < 0)
+        if (input_result != 1 || speed <= 0)
         {
             printf("Usage: Enter A Positive Number.\n");
 
@@ -245,4 +245,82 @@ double input_coordinate(const char *prompt, double min_value, double max_value)
     } while (!valid_input);
 
     return attribute_value;
+}
+
+// Check if the POI is reasonable
+int input_POI(const char *prompt, Link *links, int num_links)
+{
+    char input_buffer[100];
+
+    int poi_id, input_result;
+
+    bool has_decimal_point, valid_poi_id;
+
+    do
+    {
+        printf("%s", prompt);
+
+        fgets(input_buffer, sizeof(input_buffer), stdin);
+
+        // Check if the input contains a decimal point
+        has_decimal_point = strchr(input_buffer, '.') != NULL;
+
+        input_result = sscanf(input_buffer, "%d", &poi_id);
+
+        // Check if the input is a non-negative integer
+        if (input_result != 1 || has_decimal_point || poi_id < 0)
+        {
+            printf("Usage: Enter A Non-negative Integer.\n");
+
+            valid_poi_id = false;
+        }
+
+        else
+        {
+            // Check for extra characters
+            char *endptr;
+
+            strtol(input_buffer, &endptr, 10);
+
+            if (*endptr != '\n' && *endptr != '\0')
+            {
+                printf("Usage: Enter An Integer With No Extra Characters.\n");
+
+                valid_poi_id = false;
+            }
+
+            else
+            {
+                valid_poi_id = false;
+
+                for (int i = 0; i < num_links; i++)
+                {
+                    for (int j = 0; j < links[i].poi_count; j++)
+                    {
+                        if (links[i].POI[j] == poi_id)
+                        {
+                            valid_poi_id = true;
+
+                            break;
+                        }
+                    }
+
+                    if (valid_poi_id)
+                    {
+                        break;
+                    }
+                }
+
+                // Check if the POI ID is valid
+                if (!valid_poi_id)
+                {
+                    printf("Usage: Enter An Existing POI ID.\n");
+                }
+            }
+        }
+
+    // Repeat until a valid POI ID is entered
+    } while (!valid_poi_id);
+
+    return poi_id;
 }

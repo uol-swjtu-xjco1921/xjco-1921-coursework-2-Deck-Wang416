@@ -108,6 +108,42 @@ DataLists parse_and_store_data(const char *filename)
 
             sscanf(line, "<link id=%d node=%d node=%d way=%d length=%lf veg=%lf arch=%lf land=%lf speed=%lf", &newLink->data.id, &newLink->data.node1, &newLink->data.node2, &newLink->data.way, &newLink->data.length, &newLink->data.veg, &newLink->data.arch, &newLink->data.land, &newLink->data.speed);
 
+            // Read POI
+            char *poi_start = strstr(line, "POI=");
+
+            if (poi_start)
+            {
+                poi_start += 4; 
+
+                int poi_count = 0;
+
+                // Count the number of POIs
+                for (char *c = poi_start; *c != ';'; c++)
+                {
+                    if (*c == ',') poi_count++;
+                }
+
+                // Allocate memory for the POI array
+                newLink->data.POI = (int *)malloc(poi_count * sizeof(int));
+
+                newLink->data.poi_count = poi_count;
+
+                // Read the POI values
+                for (int i = 0; i < poi_count; i++)
+                {
+                    sscanf(poi_start, "%d,", &newLink->data.POI[i]);
+
+                    poi_start = strchr(poi_start + 1, ',') + 1;
+                }
+            }
+
+            else
+            {
+                newLink->data.POI = NULL;
+                
+                newLink->data.poi_count = 0;
+            }
+
             newLink->next = data_lists.linkList;
 
             data_lists.linkList = newLink;

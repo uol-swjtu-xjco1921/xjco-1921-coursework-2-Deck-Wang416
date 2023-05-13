@@ -11,4 +11,6 @@ double input_speed(const char *prompt);
 
 double input_coordinate(const char *prompt, double min_value, double max_value);
 
+int input_POI(const char *prompt, Link *links, int num_links);
+
 #endif

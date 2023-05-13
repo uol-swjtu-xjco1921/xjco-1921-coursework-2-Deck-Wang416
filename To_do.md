@@ -8,3 +8,4 @@
 8. Preliminary implementation of interaction with users.
 9. Implemented the function of editing map attributes.
 10. The shortest path passing multiple specified intermediate locations has been calculated.
+11. The shortest path passing multiple links with specific POIs has been calculated.
