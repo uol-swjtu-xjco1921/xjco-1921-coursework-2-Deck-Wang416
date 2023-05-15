@@ -54,14 +54,42 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
 {
     double *weights = (double *)malloc(num_nodes * sizeof(double));
 
+    if (weights == NULL)
+    {
+        printf("ERROR: Weights Malloc Failed \n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
+
     int *previous_nodes = (int *)malloc(num_nodes * sizeof(int));
 
+    if (previous_nodes == NULL)
+    {
+        printf("ERROR: Previous Nodes Malloc Failed \n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
+
     bool *visited = (bool *)malloc(num_nodes * sizeof(bool));
+
+    if (visited == NULL)
+    {
+        printf("ERROR: Visited Malloc Failed \n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
 
     Path result = {0, NULL, 0};
 
     // Allocate an initial size of memory
     result.path = (Node *)calloc(1, sizeof(Node));
+
+    if (result.path == NULL)
+    {
+        printf("ERROR: Result Calloc Failed \n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
  
     for (int i = 0; i < num_nodes; i++) 
     {
@@ -117,9 +145,7 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
 
     if (weights[end_index] == DBL_MAX) 
     {
-        printf("No Appropriate Path Found.\n");
-
-        result.length = EXIT_WITH_ERRORS;
+        result.length = -1;
 
         return result;
     }
@@ -136,6 +162,13 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
 
         result.path = realloc(result.path, result.length * sizeof(Node));
 
+        if (result.path == NULL)
+        {
+            printf("ERROR: Result Realloc Failed \n");
+
+            exit(EXIT_MALLOC_FAILED);
+        }
+
         result.path[result.length - 1] = nodes[backtrack_node_index];
 
         backtrack_node_index = previous_nodes[backtrack_node_index];
@@ -145,6 +178,13 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
     result.length++;
 
     result.path = realloc(result.path, result.length * sizeof(Node));
+
+    if (result.path == NULL)
+    {
+        printf("ERROR: Result Realloc Failed \n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
 
     result.path[result.length - 1] = nodes[start_index];
 
@@ -164,8 +204,6 @@ Path dijkstra_algorithm(Node *nodes, int num_nodes, Link *links, int num_links, 
     free(previous_nodes);
 
     free(visited);
-
-    printf("FOUND\n");
 
     return result;
 }
@@ -213,10 +251,8 @@ Path shortest_path_with_positions(Node *nodes, int num_nodes, Link *links, int n
 
         Path sub_path = dijkstra_algorithm(nodes, num_nodes, links, num_links, start_index, end_index, calculate_length);
 
-        if (sub_path.length == EXIT_WITH_ERRORS) 
+        if (sub_path.length == -1) 
         {
-            printf("No Constrained Path Found.\n");
-
             free_path(&constrained_path);
 
             return constrained_path;
@@ -281,7 +317,7 @@ Path shortest_path_with_pois(Node *nodes, int num_nodes, Link *links, int num_li
                 break;
             }
 
-        if (is_poi_on_link(find_link_between_nodes(links, num_links, start_id, end_id), intermediate_poi_ids[i]) == true)
+        else if (is_poi_on_link(find_link_between_nodes(links, num_links, start_id, end_id), intermediate_poi_ids[i]) == true)
             {
                 // If start_id or end_id is a POI, construct a direct path
                 int start_index = find_node_index(nodes, num_nodes, start_id);
@@ -331,11 +367,6 @@ Path shortest_path_with_pois(Node *nodes, int num_nodes, Link *links, int num_li
                 free_path(&current_path);
             }
         }
-    }
-
-    if (shortest_path.length == 0) 
-    {
-        printf("No Constrained Path Found.\n");
     }
 
     return shortest_path;

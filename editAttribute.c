@@ -6,11 +6,11 @@ void save_data(const char *original_filename, Node *nodes, Link *links, DataList
     // Save to original file
     FILE *original_file = fopen(original_filename, "w");
 
-    if (!original_file)
+    if (original_file == NULL)
     {
-        perror("Error opening original file for saving data");
+        printf("ERROR: Bad File Name (%s)\n", original_filename);
 
-        return;
+        exit(EXIT_BAD_FILE_NAME);
     }
 
     // Write bounding data to original file

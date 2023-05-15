@@ -9,3 +9,6 @@
 9. Implemented the function of editing map attributes.
 10. The shortest path passing multiple specified intermediate locations has been calculated.
 11. The shortest path passing multiple links with specific POIs has been calculated.
+12. Improved error handling (standardized prompt statements and return values).
+13. Completed "test.sh", including unit testing and integration testing.
+14. Completed "README.txt", including requirements, operation methods, testing script and test data.

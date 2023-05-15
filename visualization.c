@@ -1,9 +1,5 @@
 #include "visualization.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-#define WINDOW_TITLE "Map Visualization"
-
 // Find a node with a specific ID and return the index of that node in the array
 int find_node_index(Node *nodes, int node_count, int id) 
 {
@@ -15,13 +11,30 @@ int find_node_index(Node *nodes, int node_count, int id)
         }
     }
 
-    return EXIT_WITH_ERRORS;
+    return -1;
 }
 
 // Flip the y-coordinate
 int flip_y(int y) 
 {
     return WINDOW_HEIGHT - y;
+}
+
+// Determine whether a node is on the found path
+bool is_node_in_path(Path *path, int id) 
+{
+    if (path != NULL) 
+    {
+        for (int i = 0; i < path->length; i++) 
+        {
+            if (path->path[i].id == id) 
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 // Draw the map using the nodes and links provided
@@ -32,7 +45,7 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
     {
         printf("ERROR: Initialize SDL Failed(%s)\n", SDL_GetError());
 
-        return;
+        exit(EXIT_SDL_ERRORS);
     }
 
     // Create a window
@@ -42,7 +55,7 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
     {
         printf("ERROR: Create Window Failed (%s)\n", SDL_GetError());
 
-        return;
+        exit(EXIT_SDL_ERRORS);
     }
 
     // Create a Renderer
@@ -52,15 +65,15 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
     {
         printf("ERROR: Create Renderer Failed (%s)\n", SDL_GetError());
 
-        return;
+        exit(EXIT_SDL_ERRORS);
     }
 
     // Initialize SDL_ttf
     if (TTF_Init() == -1) 
     {
-        printf("ERROR: Initialize SDL_ttf Failed (%s)\n", TTF_GetError());
+        printf("ERROR: Initialize SDL_TTF Failed (%s)\n", TTF_GetError());
 
-        return;
+        exit(EXIT_SDL_ERRORS);
     }
 
     // Load font
@@ -72,7 +85,7 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
 
         TTF_Quit();
 
-        return;
+        exit(EXIT_SDL_ERRORS);
     }
 
     // Set scaling factor
@@ -167,9 +180,21 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
 
                 node_rect.h = 5;
 
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                // Check if the node is part of the path
+                if (is_node_in_path(path, nodes[i].id)) 
+                {
+                    // If so, set the nodes to red
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+                } 
 
-                SDL_RenderFillRect(renderer, &node_rect);
+                else 
+                {
+                    // Set the the other nodes to blue
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                }
+
+                // Draw solid nodes
+                SDL_RenderFillRect(renderer, &node_rect);   
             }
         }
 
@@ -245,7 +270,8 @@ void draw_map(Node *nodes, int num_nodes, Link *links, int num_links, Path *path
         // Draw the shortest route
         if (path != NULL && path->length > 1) 
         {
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE); // Set red
+            // Set the route to red
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE); 
 
             for (int i = 1; i < path->length; i++) 
             {

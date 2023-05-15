@@ -1,12 +1,12 @@
-We will employ functional and non-functional testing to test the project.
+I plan to employ functional and non-functional testing to test the project.
 
 Functional testing is divided into unit testing and integration testing.
 
 Unit Testing:
-Focused on individual functions, ensuring they perform as expected. We will create test cases for each function, covering both normal and edge cases, such as negative distances, zero distances, non-existent nodes, and unreachable destinations. Additionally, we will test exception handling and the correctness of error messages.
+Focused on individual functions, ensuring they perform as expected. We will create test cases for each function, covering both normal and edge cases, such as missing command line arguments, file name error, file missing attributes or labels. Additionally, we will test return value and the correctness of error messages.
 
 Integration Testing:
-Validates the cohesive operation of the entire application. We will pass in different map data to test whether the program can identify an optimal path between the given start point and end point. Simultaneously, we will also examine memory management and resource allocation. Lastly, we will ensure the accuracy and integrity of the visualized images.
+Validates the cohesive operation of the entire application. We will pass in different map data to test whether the program can identify an optimal path between the given start point and end point. Simultaneously, we will also examine various error prompts during the interaction process, such as incorrect input type, data does not exist, value or option out of range and so on. Lastly, we will ensure the accuracy and integrity of the visualized images.
 
 Non-functional testing includes performance testing and reliability testing:
 

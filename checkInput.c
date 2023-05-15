@@ -23,7 +23,7 @@ int input_node_id(const char *prompt, Node *nodes, int num_nodes)
         // Check if the input is an integer
         if (input_result != 1 || has_decimal_point)
         {
-            printf("Usage: Enter An Integer.\n");
+            printf("Usage: Enter An Integer\n");
 
             valid_node_id = false;
         }
@@ -37,7 +37,7 @@ int input_node_id(const char *prompt, Node *nodes, int num_nodes)
 
             if (*endptr != '\n' && *endptr != '\0')
             {
-                printf("Usage: Enter An Integer With No Extra Characters.\n");
+                printf("Usage: Enter An Integer with No Extra Characters\n");
 
                 valid_node_id = false;
             }
@@ -51,7 +51,7 @@ int input_node_id(const char *prompt, Node *nodes, int num_nodes)
                 // Check if the node ID is valid
                 if (!valid_node_id)
                 {
-                    printf("Usage: Enter An Existing Node ID.\n");
+                    printf("Usage: Enter An Existing Node ID\n");
                 }
             }
         }
@@ -85,7 +85,7 @@ int input_link_id(const char *prompt, Link *links, int num_links)
         // Check if the input is an integer
         if (input_result != 1 || has_decimal_point)
         {
-            printf("Usage: Enter An Integer.\n");
+            printf("Usage: Enter An Integer\n");
 
             valid_link_id = false;
         }
@@ -99,7 +99,7 @@ int input_link_id(const char *prompt, Link *links, int num_links)
             // Check for extra characters
             if (*endptr != '\n' && *endptr != '\0')
             {
-                printf("Usage: Enter An Integer With No Extra Characters.\n");
+                printf("Usage: Enter An Integer with No Extra Characters\n");
 
                 valid_link_id = false;
             }
@@ -123,7 +123,7 @@ int input_link_id(const char *prompt, Link *links, int num_links)
                 // Check if the link ID is valid
                 if (!valid_link_id)
                 {
-                    printf("Usage: Enter An Existing Link ID.\n");
+                    printf("Usage: Enter An Existing Link ID\n");
                 }
             }
         }
@@ -134,7 +134,7 @@ int input_link_id(const char *prompt, Link *links, int num_links)
     return link_id;
 }
 
-// // Check if the speed is reasonable
+// Check if the speed is reasonable
 double input_speed(const char *prompt)
 {
     char input_buffer[100];
@@ -156,7 +156,7 @@ double input_speed(const char *prompt)
         // Check if the input is a positive number
         if (input_result != 1 || speed <= 0)
         {
-            printf("Usage: Enter A Positive Number.\n");
+            printf("Usage: Enter A Positive Number\n");
 
             valid_speed = false;
         }
@@ -170,7 +170,7 @@ double input_speed(const char *prompt)
             // Check for extra characters
             if (*endptr != '\n' && *endptr != '\0')
             {
-                printf("Usage: Enter A Positive Number With No Extra Characters.\n");
+                printf("Usage: Enter A Positive Number with No Extra Characters\n");
 
                 valid_speed = false;
             }
@@ -209,7 +209,7 @@ double input_coordinate(const char *prompt, double min_value, double max_value)
         // Check for wrong data type
         if (input_result != 1 )
         {
-            printf("Usage: Enter A Numeric Value.\n");
+            printf("Usage: Enter A Numeric Value\n");
 
             valid_input = false;
         }
@@ -223,7 +223,7 @@ double input_coordinate(const char *prompt, double min_value, double max_value)
             // Check for extra characters
             if (*endptr != '\n' && *endptr != '\0')
             {
-                printf("Usage: Enter A Numeric Value With No Extra Characters.\n");
+                printf("Usage: Enter A Numeric Value with No Extra Characters\n");
 
                 valid_input = false;
             }
@@ -231,7 +231,7 @@ double input_coordinate(const char *prompt, double min_value, double max_value)
             // Check for Values beyond the reasonable range
             else if (attribute_value < min_value || attribute_value > max_value)
             {
-                printf("Usage: Enter A Valid Value Between %lf And %lf.\n", min_value, max_value);
+                printf("Usage: Enter A Valid Value between %lf and %lf\n", min_value, max_value);
 
                 valid_input = false;
             }
@@ -270,7 +270,7 @@ int input_POI(const char *prompt, Link *links, int num_links)
         // Check if the input is a non-negative integer
         if (input_result != 1 || has_decimal_point || poi_id < 0)
         {
-            printf("Usage: Enter A Non-negative Integer.\n");
+            printf("Usage: Enter A Non-Negative Integer\n");
 
             valid_poi_id = false;
         }
@@ -284,7 +284,7 @@ int input_POI(const char *prompt, Link *links, int num_links)
 
             if (*endptr != '\n' && *endptr != '\0')
             {
-                printf("Usage: Enter An Integer With No Extra Characters.\n");
+                printf("Usage: Enter An Integer with No Extra Characters\n");
 
                 valid_poi_id = false;
             }
@@ -314,7 +314,7 @@ int input_POI(const char *prompt, Link *links, int num_links)
                 // Check if the POI ID is valid
                 if (!valid_poi_id)
                 {
-                    printf("Usage: Enter An Existing POI ID.\n");
+                    printf("Usage: Enter An Existing POI ID\n");
                 }
             }
         }

@@ -24,8 +24,5 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
-%.o: %.c dataParser.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
 clean:
 	rm -f $(TARGET) $(OBJS)
