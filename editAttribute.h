@@ -3,7 +3,7 @@
 
 #include "readMap.h"
 
-#define MAX_POI_COUNT 1
+#define MAX_POI_COUNT 10
 
 void save_data(const char *original_filename, Node *nodes, Link *links, DataLists *data_lists);
 

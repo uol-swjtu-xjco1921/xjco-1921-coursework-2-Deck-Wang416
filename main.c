@@ -6,11 +6,18 @@
 
 int main(int argc, char **argv) 
 {
-    if (argc != 2) 
+    if(argc == 1)
     {
-        printf("Usage: %s <filename>\n", argv[0]);
+        printf("Usage: %s inputFile.map\n", argv[0]);
 
-        return EXIT_WITH_ERRORS;
+        exit(EXIT_NO_ERRORS);
+    }
+
+    else if (argc != 2) 
+    {
+        printf("ERROR: Bad Argument Count\n");
+
+        exit(EXIT_WRONG_ARG_COUNT);
     }
 
     // Read and store the data from the original file
@@ -19,7 +26,21 @@ int main(int argc, char **argv)
     // Create an array of nodes and links
     Node *nodes = (Node *)malloc(data_lists.node_count * sizeof(Node));
 
+    if (nodes == NULL)
+    {
+        printf("ERROR: Nodes Malloc Failed\n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
+
     Link *links = (Link *)malloc(data_lists.link_count * sizeof(Link));
+
+    if (links == NULL)
+    {
+        printf("ERROR: Links Malloc Failed\n");
+
+        exit(EXIT_MALLOC_FAILED);
+    }
     
     // Convert a linked list to arrays
     NodeList *node_iter = data_lists.nodeList;
@@ -72,7 +93,7 @@ int main(int argc, char **argv)
                         // Check if the end node ID and start node ID are the same
                         if (start_id == end_id)
                         {
-                            printf("Enter An End Node ID Different from The Start Node ID.\n");
+                            printf("Usage: Enter An End Node ID Different from The Start Node ID\n");
                         }
 
                     } while (start_id == end_id);
@@ -83,6 +104,11 @@ int main(int argc, char **argv)
                     int end_index = find_node_index(nodes, data_lists.node_count, end_id);
 
                     Path path = dijkstra_algorithm(nodes, data_lists.node_count, links, data_lists.link_count, start_index, end_index, calculate_length);
+
+                    if (path.length == -1)
+                    {
+                        printf("No Shortest Path Found between Nodes %d and %d\n", start_id, end_id);
+                    }
 
                     if (path.length > 0) 
                     {
@@ -125,7 +151,7 @@ int main(int argc, char **argv)
                         // Check if the end node ID and start node ID are the same
                         if (start_id == end_id)
                         {
-                            printf("Enter An End Node ID Different from The Start Node ID.\n");
+                            printf("Usage: Enter An End Node ID Different from The Start Node ID\n");
                         }
                         
                     } while (start_id == end_id);
@@ -151,7 +177,7 @@ int main(int argc, char **argv)
                     // If every links have not speed, prompt the user to input the speed limits
                     if (speed_missing)
                     {
-                        printf("Usage: Add Speed Limits to The Links.\n");
+                        printf("Usage: Add Speed Limits to The Links\n");
 
                         char continue_input = 'y';
 
@@ -183,7 +209,12 @@ int main(int argc, char **argv)
 
                     Path path = dijkstra_algorithm(nodes, data_lists.node_count, links, data_lists.link_count, start_index, end_index, calculate_time);
 
-                    if (path.length > 0) 
+                    if (path.length == -1)
+                    {
+                        printf("No Quickest Path Found between Nodes %d and %d\n", start_id, end_id);
+                    }
+                    
+                    else if (path.length > 0) 
                     {
                         printf("The Quickest Path between Nodes %d and %d Is:\n", start_id, end_id);
 
@@ -227,7 +258,7 @@ int main(int argc, char **argv)
                         // Check if the end node ID and start node ID are the same
                         if (start_id == end_id)
                         {
-                            printf("Enter An End Node ID Different from The Start Node ID.\n");
+                            printf("Usage: Enter An End Node ID Different from The Start Node ID\n");
                         }
                         
                     } while (start_id == end_id);
@@ -244,7 +275,7 @@ int main(int argc, char **argv)
                     do
                     {
                         // Prompt user to choose between location and POI
-                        printf("Choose An Option From Passing A Given Location(L) or POI(P): ");
+                        printf("Choose An Option from Passing A Given Location(L) and POI(P): ");
 
                         char constraint_type, input_continue; 
 
@@ -310,14 +341,19 @@ int main(int argc, char **argv)
 
                             default:
 
-                                printf("Usage: Enter Either L or P.\n");
+                                printf("Usage: Enter Either L or P\n");
 
                                 break;
                         }
 
                     } while(!correct_choice);
 
-                    if (constrained_path.length > 0) 
+                    if (constrained_path.length == 0) 
+                    {
+                        printf("No Shortest Path with Constraints Found between Nodes %d and %d\n", start_id, end_id);
+                    }
+
+                    else if (constrained_path.length > 0) 
                     {
                         printf("The Shortest Path with Constraints between Nodes %d and %d Is:\n", start_id, end_id);
 
@@ -367,7 +403,7 @@ int main(int argc, char **argv)
                             {
                                 int link_id = input_link_id("Enter The Link ID: ", links, data_lists.link_count);
 
-                                printf("Link Attributes: length, veg, arch, land, speed.\n");
+                                printf("Link Attributes: length, veg, arch, land, speed\n");
 
                                 printf("Enter The Attribute to Modify: ");
 
@@ -382,7 +418,7 @@ int main(int argc, char **argv)
                                     strcmp(attribute, "arch") != 0 && strcmp(attribute, "land") != 0 &&
                                     strcmp(attribute, "speed") != 0)
                                 {
-                                    printf("Usage: Enter An Existing Attribute.\n");
+                                    printf("Usage: Enter An Existing Attribute\n");
 
                                     printf("Enter The Attribute: ");
 
@@ -420,7 +456,7 @@ int main(int argc, char **argv)
                                     // Check if the attribute is valid
                                     while (strcmp(attribute, "lat") != 0 && strcmp(attribute, "lon") != 0)
                                     {
-                                        printf("Usage: Enter An Existing Attribute.\n");
+                                        printf("Usage: Enter An Existing Attribute\n");
 
                                         printf("Enter The Attribute: ");
 
@@ -486,7 +522,7 @@ int main(int argc, char **argv)
                             default:
                         
                                 {
-                                    printf("Usage: Enter Either 1 or 2.\n");
+                                    printf("Usage: Enter Either 1 or 2\n");
 
                                     break;                           
                                 }
@@ -503,7 +539,7 @@ int main(int argc, char **argv)
 
             default:
 
-                printf("Usage: Enter Either A, B or C.\n");
+                printf("Usage: Enter Either A, B or C\n");
 
                 break;
         }
@@ -521,5 +557,5 @@ int main(int argc, char **argv)
 
     free_list(data_lists.linkList, LINK_LIST);
 
-    return EXIT_WITHOUT_ERRORS;
+    return EXIT_NO_ERRORS;
 }

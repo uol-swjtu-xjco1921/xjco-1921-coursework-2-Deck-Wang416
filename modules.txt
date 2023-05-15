@@ -1,10 +1,10 @@
-Module 1: Data Parsing and Storage
+Module 1: Data Reading and Storage
 
 This module, implemented in "readMap.c", is dedicated to reading and storing map data from an input file. The parse_and_store_data function reads its content line by line, extracts essential node and link information, and store it in linked list structures. This module ensures organized and efficient data read and storage for further processing.
 
 Module 2: Map Visualization
 
-This module visualizes and interacts with map data, providing an intuitive representation of nodes and links. Utilizing the PROJ library for geographical coordinates and SDL for graphics, "visualization.c" initializes SDL, creates a window and renderer, sets up PROJ for map projection, and transforms coordinates. It iterates through nodes and links, rendering them on the SDL window, while managing zooming and panning. Finally, it releases allocated resources for proper cleanup upon exit.
+This module visualizes with map data, providing a visual representation of nodes and links. "visualization.c" initializes SDL, creates windows and renderers, and loads fonts to display text on the map. Next, the maximum and minimum latitude and longitude of the nodes were calculated, and geographic coordinates were converted into pixel coordinates based on this information. Then, nodes and links were drawn in the SDL window based on this information. It also draws a coordinate axis at the edge of the window and adds scale marks and labels. Finally, in each iteration of the loop, the code clears the screen and re renders.
 
 Module 3: Path Calculation
 
@@ -12,12 +12,12 @@ This module calculates the shortest and fastest paths using Dijkstra algorithm a
 
 Module 4: Attributes editing
 
-This module provides functions for editing attributes of nodes and links in a transportation network and saves updated data to original and parsed files. In "editAttribute.c", it sorts nodes and links using "qsort" and custom compare functions. It then updates the specified attribute of a node or link by iterating through the array and locating the matching ID. Attributes include length, vegetation, architecture, land-use, and speed for links, and latitude and longitude for nodes. This module facilitate consistent transportation network data management.
+This module provides functions for editing attributes of nodes and links in a transportation network and saves updated data to original and parsed files. In "editAttribute.c", It updates the specified attribute of a node or link by iterating through the array and locating the matching ID. Attributes include length, vegetation, architecture, land-use, speed and POI for links, and latitude and longitude for nodes. This module facilitate consistent transportation network data management.
 
 Module 5: Input Check
 
-This module is implemented in "checkInput.c" to verify and process user inputs related to nodes and links in the transportation network. It provides functions for checking the reasonableness of node IDs, link IDs, speeds, and coordinates (latitude and longitude). If the input is invalid, the program prompts the user with appropriate error messages and guidance on how to correct the input. These functions ensure that the underlying data processing and operation algorithms receive valid input data by verifying user input, preventing erroneous results and potential crashes.
+This module is implemented in "checkInput.c" to verify and process user inputs related to nodes and links in the transportation network. It provides functions for checking the reasonableness of node IDs, link IDs, speeds, POIs and coordinates (latitude and longitude). If the input is invalid, the program prompts the user with appropriate error messages and guidance on how to correct the input. These functions ensure that the underlying data processing and operation algorithms receive valid input data by verifying user input, preventing erroneous results and potential crashes.
 
 Module 6: Main Function
 
-The "main.c" program integrates all modules to form a cohesive application. This module parses map data and stores it in both linked lists and arrays. It provides a user menu for selecting between calculating the shortest or fastest path, constraint route, or editing node and link attributes. Utilizing Dijkstra's algorithm, it displays the chosen path and presents an updated map visualization. The application also allows users to modify node and link attributes and saves the changes to data and parsed files.
+The "main.c" program serves as an integrative backbone for the entire application, effectively weaving all modules together. It commences by parsing map data, storing it in both data structures for optimal access and manipulation. The user interface is designed to provide multiple options, such as calculating the shortest ,fastest route, shortest route with constraint or editing attributes, which are reflected immediately on the map and persisting them in the original data files. This ensures a dynamic and interactive user experience, facilitating comprehensive navigation planning and customization.

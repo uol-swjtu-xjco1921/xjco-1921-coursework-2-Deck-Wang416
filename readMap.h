@@ -4,12 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_LINE_LENGTH 1024
 
 // Exit codes 
-#define EXIT_WITHOUT_ERRORS 0
-#define EXIT_WITH_ERRORS -1
+#define EXIT_NO_ERRORS 0
+#define EXIT_WRONG_ARG_COUNT 1
+#define EXIT_BAD_FILE_NAME 2
+#define EXIT_MALLOC_FAILED 3
+#define EXIT_SDL_ERRORS 4
+#define EXIT_BAD_ATTRIBUTES 5
+#define EXIT_BAD_LABELS 6
 
 typedef struct Bounding
 {
@@ -109,9 +115,15 @@ typedef struct
     double total_length;
 } Path;
 
-void free_unparsed_tags(UnparsedTag *list);
+bool is_bounding_format_correct(const char* line);
+
+bool is_link_format_correct(const char* line);
+
+bool is_node_format_correct(const char* line);
 
 void free_list(void *list, ListType type);
+
+void free_unparsed_tags(UnparsedTag *list);
 
 DataLists parse_and_store_data(const char *filename);
 
